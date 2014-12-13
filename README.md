@@ -1,7 +1,7 @@
 ng-rails-resources
 ==================
 
-automating building rails resources 
+automating building rails resources in angular
 
 1. include ngRailsResources module into app.
 
