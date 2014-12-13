@@ -1,5 +1,5 @@
 //Resources
-var railsResources = angular.module('ngRailsResources', []);
+var ngRailsResources = angular.module('ngRailsResources', []);
 Resources = function(entries){
  var resources = {}, controllers = [], defaultParams, url = "";
  
@@ -24,7 +24,7 @@ Resources = function(entries){
     }).slice(1);
   }
   function singularize(str){
-    var exceptions = ["mice", "sheep", "knowledge", "jewelery", "information"];
+    var exceptions = ["welcome", "mice", "sheep", "knowledge", "jewelery", "information"];
     if(exceptions.indexOf(str.toLowerCase()) > -1) 
       return str;
     var singular = str;
@@ -46,7 +46,7 @@ Resources = function(entries){
   }
 
   angular.forEach(controllers, function(value, key){
-   railsResources.factory( humanize(singularize(value)), ['$resource', function($resource) {
+   ngRailsResources.factory( humanize(singularize(value)), ['$resource', function($resource) {
      defaultParams = {id: '@id'};
      url = resources[value].hasOwnProperty('url') ? resources[value]['url'] : "api/"+ setParentPath(key) + value + "/:id";
      defaultParams = resources[value].hasOwnProperty('defaultParams') ? resources[value]['defaultParams'] : defaultParams;
