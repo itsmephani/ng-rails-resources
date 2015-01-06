@@ -1,5 +1,5 @@
 //Resources
-var ngRailsResources = angular.module('ngRailsResources', []);
+var railsResources = angular.module('railsResources', []);
 Resources = function(entries){
  var resources = {}, controllers = [], defaultParams, url = "";
  
@@ -18,14 +18,16 @@ Resources = function(entries){
  
  controllers = Object.keys(resources);
  
- function humanize(str){
+ function camelize(str){
+    if(!str) 
+      return '';
     return str[0].toUpperCase() + str.replace(/_([a-z])/g, function(a, b) {
-        return " "+b;
+        return b.toUpperCase();
     }).slice(1);
   }
   function singularize(str){
-    var exceptions = ["welcome", "mice", "sheep", "knowledge", "jewelery", "information"];
-    if(exceptions.indexOf(str.toLowerCase()) > -1) 
+    var exceptions = ["mice", "sheep", "knowledge", "jewelery", "information"];
+    if(exceptions.indexOf(str.toLowerCase()) > -1 || str[str.length-1] == 'a') 
       return str;
     var singular = str;
     if (str.substr(str.length - 3) == 'ies') {
@@ -46,9 +48,10 @@ Resources = function(entries){
   }
 
   angular.forEach(controllers, function(value, key){
-   ngRailsResources.factory( humanize(singularize(value)), ['$resource', function($resource) {
+   railsResources.factory( camelize(singularize(value)), ['$resource', function($resource) {
      defaultParams = {id: '@id'};
-     url = resources[value].hasOwnProperty('url') ? resources[value]['url'] : "api/"+ setParentPath(key) + value + "/:id";
+     //defaultParams[singularize(value)+ '_id'] = '@id';
+     url = resources[value].hasOwnProperty('url') ? resources[value]['url'] : "/"+ setParentPath(key) + value + "/:id";
      defaultParams = resources[value].hasOwnProperty('defaultParams') ? resources[value]['defaultParams'] : defaultParams;
      methods = resources[value].hasOwnProperty('methods') ? resources[value]['methods'] : {};
      
