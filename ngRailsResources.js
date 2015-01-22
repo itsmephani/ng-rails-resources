@@ -1,8 +1,9 @@
 //Resources
 var railsResources = angular.module('railsResources', []);
 Resources = function(entries){
- var resources = {}, controllers = [], defaultParams, url = "";
- 
+ var resources = {}, controllers = [], defaultParams, url = "" ,appRoot = "";
+ appRoot = window.location.href.substring(0, window.location.href.indexOf('#/'));
+ appRoot[appRoot.length - 1] == '/' ? angular.noop : appRoot = appRoot + '/';
  function buildResources(){
    if(typeof entries === "string"){
     resources[entries] = {};
@@ -51,7 +52,7 @@ Resources = function(entries){
    railsResources.factory( camelize(singularize(value)), ['$resource', function($resource) {
      defaultParams = {id: '@id'};
      //defaultParams[singularize(value)+ '_id'] = '@id';
-     url = resources[value].hasOwnProperty('url') ? resources[value]['url'] : "/"+ setParentPath(key) + value + "/:id";
+     url = resources[value].hasOwnProperty('url') ? resources[value]['url'] : appRoot + setParentPath(key) + value + "/:id";
      defaultParams = resources[value].hasOwnProperty('defaultParams') ? resources[value]['defaultParams'] : defaultParams;
      methods = resources[value].hasOwnProperty('methods') ? resources[value]['methods'] : {};
      
