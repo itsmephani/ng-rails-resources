@@ -1,8 +1,9 @@
 //Resources
 var railsResources = angular.module('railsResources', []);
 Resources = function(entries){
- var resources = {}, controllers = [], defaultParams, url = "" ,appRoot = "";
- appRoot = window.location.href.substring(0, window.location.href.indexOf('#/'));
+ var resources = {}, controllers = [], defaultParams, url = "" ,appRoot = "", index;
+ index = window.location.href.indexOf('#/') > -1 ? window.location.href.indexOf('#/') : window.location.href.length;
+ appRoot = window.location.href.substring(0, index);
  appRoot[appRoot.length - 1] == '/' ? angular.noop : appRoot = appRoot + '/';
  function buildResources(){
    if(typeof entries === "string"){
