@@ -1,11 +1,22 @@
 //Resources
-var railsResources = angular.module('railsResources', []);
+var ngRailsResources = angular.module('ngRailsResources', []);
+ngRailsResources.config(['$controllerProvider',
+  '$compileProvider', '$filterProvider', '$provide',
+  function($controllerProvider,
+    $compileProvider, $filterProvider, $provide) {
+
+    ngRailsResources.register = {
+      controller: $controllerProvider.register,
+      directive: $compileProvider.directive,
+      filter: $filterProvider.register,
+      factory: $provide.factory,
+      service: $provide.service
+    };
+  }
+]);
 Resources = function(entries){
- var resources = {}, controllers = [], defaultParams, url = "" ,appRoot = "", index;
- index = window.location.href.indexOf('#/') > -1 ? window.location.href.indexOf('#/') : window.location.href.length;
- appRoot = window.location.href.substring(0, index);
- appRoot[appRoot.length - 1] == '/' ? angular.noop : appRoot = appRoot + '/';
- function buildResources(){
+  var resources = {}, controllers = [], defaultParams, url = "";
+  function buildResources(){
    if(typeof entries === "string"){
     resources[entries] = {};
    }else if(Array.isArray(entries)) {
@@ -15,21 +26,19 @@ Resources = function(entries){
    }else{
     resources = angular.copy(entries);
    }   
- }
- buildResources();
- 
- controllers = Object.keys(resources);
- 
- function camelize(str){
-    if(!str) 
-      return '';
+  }
+  buildResources();
+
+  controllers = Object.keys(resources);
+
+  function humanize(str){
     return str[0].toUpperCase() + str.replace(/_([a-z])/g, function(a, b) {
-        return b.toUpperCase();
+        return " "+b;
     }).slice(1);
   }
   function singularize(str){
     var exceptions = ["mice", "sheep", "knowledge", "jewelery", "information"];
-    if(exceptions.indexOf(str.toLowerCase()) > -1 || str[str.length-1] == 'a') 
+    if(exceptions.indexOf(str.toLowerCase()) > -1) 
       return str;
     var singular = str;
     if (str.substr(str.length - 3) == 'ies') {
@@ -50,18 +59,18 @@ Resources = function(entries){
   }
 
   angular.forEach(controllers, function(value, key){
-   railsResources.factory( camelize(singularize(value)), ['$resource', function($resource) {
-     defaultParams = {id: '@id'};
-     //defaultParams[singularize(value)+ '_id'] = '@id';
-     url = resources[value].hasOwnProperty('url') ? resources[value]['url'] : appRoot + setParentPath(key) + value + "/:id";
-     defaultParams = resources[value].hasOwnProperty('defaultParams') ? resources[value]['defaultParams'] : defaultParams;
-     methods = resources[value].hasOwnProperty('methods') ? resources[value]['methods'] : {};
-     
-     return $resource(url, defaultParams,methods);
+    ngRailsResources.register.factory( humanize(singularize(value)), ['$resource', function($resource) {
+      defaultParams = {id: '@id'};
+      //defaultParams[singularize(value)+ '_id'] = '@id';
+      url = resources[value].hasOwnProperty('url') ? resources[value]['url'] : "api/"+ setParentPath(key) + value + "/:id";
+      defaultParams = resources[value].hasOwnProperty('defaultParams') ? resources[value]['defaultParams'] : defaultParams;
+      methods = resources[value].hasOwnProperty('methods') ? resources[value]['methods'] : {};
 
-   }]);
+      return $resource(url, defaultParams, methods);
+
+    }]);
 
  });
  
 }
-// 
+//
